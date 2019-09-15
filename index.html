@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="https://cdn.brainpop.com/math/practicalmath/icon.png" />
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <title>Distribuição de Frequência por Intervalos</title>
+</head>
+    <header>
+        <h1>Distribuição de Frequência por Intervalos</h1>
+        <hr>
+    </header>
+    <body>
+        <div id="helpers">
+            <button class="btn" onclick="window.location.reload()">Refresh &#9746;</button><br>
+            <button class="btn" onmouseover="showHelp()" onmouseout="hidHelp()">Help &quest;</button>
+            <div id="help">
+                <p>Para realizar o calculo você precisará digitar o primeiro 'LI Inferior' e todos os 'LI Superiores'.</p>
+                <hr>
+                <pre>
+            Ex.: 0 - 20
+                      - 40
+                      - 60
+                      - 80
+                </pre>
+            </div>
+        </div>
+        <p>Classe: 
+            <input type="number" placeholder="Classes" id="txtnum">
+            <button class="btn" onclick="saveClasse()">Guardar</button>
+        </p>
+        <p id='pfa'>FA:
+            <input type="number" placeholder="FA" id="txtfa">
+            <button class="btn" onclick="saveFA()">Guardar</button>
+        </p> 
+        <button class="btn" id="btnCalc" onclick="calcular()">Calcular</button>
+
+        <ul>
+            <li><select name="classe" id="classe" size="11px"><option class="labels">Classes</option></select></li>
+            <li></li><select name="fa" id="fa" size="11px"><option class="labels">FA</option></select></li>
+            <li></li><select name="faa" id="faa" size="11px"><option class="labels">FAA</option></select></li>
+            <li></li><select name="fr" id="fr" size="11px"><option class="labels">FR</option></select></li>
+            <li></li><select name="fra" id="fra" size="11px"><option class="labels">FRA</option></select></li>
+            <li></li><select name="pm" id="pm" size="11px"><option class="labels">PM</option></select></li>
+            <li></li><select name="pmxfa" id="pmxfa" size="11px"><option class="labels">PMxFA</option></select></li>
+        </ul>
+                
+        <div id="showResult">
+            
+        </div>  
+    </body>
+    
+    <footer>
+        <p>Created by Julio Cesar | 09/2019 &copy;</p>
+    </footer>
+</html>
