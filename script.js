@@ -59,10 +59,10 @@ const calcular = () => {
         //---FR
         const fr = fa.map(e => casasDecimais((e / somatorioFA * 100), 1))
 
-        //---FR 
+        //---Somatório FR 
         contador = 0
-        fr.map(e => contador += casasDecimais(e, 1))
-        const somatorioFR = contador
+        fr.map(e => contador += e)
+        const somatorioFR = casasDecimais(contador, 1)
 
         //---FRA
         contador = 0 
@@ -86,9 +86,11 @@ const calcular = () => {
         const ma = casasDecimais((somatorioPMxFA / somatorioFA), 1)
 
         //---MO
-        let faEscolhido = fa.reduce((ac, cv, i) => {return ac > cv ? ac : cv})
-        let liEscolhido = fa.indexOf(faEscolhido)     
-        let mo = casasDecimais((classe[liEscolhido] + [(faEscolhido - fa[liEscolhido - 1]) / ((faEscolhido - fa[liEscolhido - 1]) + (faEscolhido - fa[liEscolhido + 1]))] * intervalo), 1)
+        const faEscolhido = fa.reduce((ac, cv, i) => {return ac > cv ? ac : cv})
+        const liEscolhido = fa.indexOf(faEscolhido) 
+        const faAnterior = fa[liEscolhido - 1] || 0
+        const faPosterior = fa[liEscolhido + 1]|| 0
+        let mo = casasDecimais((classe[liEscolhido] + [(faEscolhido - faAnterior) / ((faEscolhido - faAnterior) + (faEscolhido - faPosterior))] * intervalo), 1)
         
         //---MD
         const faEscolhidoMd = somatorioFA / 2
@@ -101,7 +103,8 @@ const calcular = () => {
         }
         const indice = faa.indexOf(faaEscolhidoMd)
         const liEscolhidoMd = classe[indice]
-        const md = casasDecimais((liEscolhidoMd + [(faEscolhidoMd - faa[indice - 1]) / fa[indice]] * intervalo), 1)
+        const faaAnterior = faa[indice - 1] || 0
+        const md = casasDecimais((liEscolhidoMd + [(faEscolhidoMd - faaAnterior) / fa[indice]] * intervalo), 1)
         //---Resultado
         return showAll(somatorioFA, faa, fr, somatorioFR, fra, pm, PMxFA, somatorioPMxFA, ma, mo, md)
 
