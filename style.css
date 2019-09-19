@@ -92,6 +92,10 @@ input {
     text-decoration-line: underline;
 }
 
+option {
+    border: 1px solid rgba(48, 47, 47, 0.801);
+}
+
 #helpers {
     position: absolute;
     left: 0;
