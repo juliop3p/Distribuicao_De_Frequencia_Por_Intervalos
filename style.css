@@ -83,7 +83,13 @@ input {
 #showResult {
     margin: auto;
     color: white;
-    margin-bottom: 50px;
+    text-align: left;
+    margin-bottom: 60px;
+    max-width: 700px;
+}
+
+#showResult h2 {
+    margin: 20px 0;
 }
 
 .labels {
