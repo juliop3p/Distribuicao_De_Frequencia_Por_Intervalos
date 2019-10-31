@@ -83,8 +83,20 @@ const calcular = () => {
         const somatorioPMxFA = PMxFA.reduce((ac, cv) => ac + cv)
 
         //---MA
-        const ma = casasDecimais((somatorioPMxFA / somatorioFA), 1)
+        const ma = Number(casasDecimais((somatorioPMxFA / somatorioFA), 1))
 
+        //--- PM-MA
+        const De = pm.map(e => Number((e - ma).toFixed(1)))
+
+        //---D²
+        const De2 = De.map(e => Number(Math.pow(e, 2).toFixed(1)))
+        
+        //---D²xFA
+        const D2xFA = De2.map((e, i) => Number((e * fa[i]).toFixed(2)))
+
+        //---Somatório D²xFA
+        const somatorioD2xFA = D2xFA.reduce((ac, cv) => Number((ac + cv).toFixed(1)))
+        
         //---MO
         const faEscolhido = fa.reduce((ac, cv, i) => {return ac > cv ? ac : cv})
         const liEscolhido = fa.indexOf(faEscolhido) 
@@ -93,20 +105,83 @@ const calcular = () => {
         let mo = casasDecimais((classe[liEscolhido] + [(faEscolhido - faAnterior) / ((faEscolhido - faAnterior) + (faEscolhido - faPosterior))] * intervalo), 1)
         
         //---MD
-        const faEscolhidoMd = somatorioFA / 2
-        let faaEscolhidoMd
-        for(let e of faa) {
-            if(e > faEscolhidoMd) {
-                faaEscolhidoMd = e
-                break
+        function MD(bolinha) {
+            let faEscolhidoMd = bolinha
+            let faaEscolhidoMd
+            for(let e of faa) {
+                if(e >= faEscolhidoMd) {
+                    faaEscolhidoMd = e
+                    break
+                }
             }
+            const indice = faa.indexOf(faaEscolhidoMd)
+            const liEscolhidoMd = classe[indice]
+            const faaAnterior = faa[indice - 1] || 0
+            return Number(casasDecimais((liEscolhidoMd + [(faEscolhidoMd - faaAnterior) / fa[indice]] * intervalo), 1))
         }
-        const indice = faa.indexOf(faaEscolhidoMd)
-        const liEscolhidoMd = classe[indice]
-        const faaAnterior = faa[indice - 1] || 0
-        const md = casasDecimais((liEscolhidoMd + [(faEscolhidoMd - faaAnterior) / fa[indice]] * intervalo), 1)
+        let bolinha = somatorioFA / 2
+        const md = MD(bolinha) 
+        
+        //---Variancia
+        const V = Number(casasDecimais(somatorioD2xFA / somatorioFA, 1))
+
+        //---Desvio Padrao
+        const DP = Number(casasDecimais(Math.sqrt(V), 1))
+
+        //---Tipo de curva
+        const TC = Number(casasDecimais(ma - mo, 1))
+        let TcText = ''
+        if(TC > 0) {
+            TcText = "Curva Assimétrica Positiva"
+        } else if(TC < 0) {
+            TcText = "Curva Assimétrica Negativa"
+        } else {
+            TcText = "Curva Simétrica"
+        }
+
+        //---Quartiz
+        bolinha = somatorioFA / 4
+        const qt1 = MD(bolinha)
+
+        const qt2 = md
+
+        bolinha = somatorioFA / 4 * 3
+        const qt3 = MD(bolinha)
+
+        //---P10, P90
+        bolinha = somatorioFA / 100 * 10
+        const p10 = MD(bolinha)
+
+        bolinha = somatorioFA / 100 * 90
+        const p90 = MD(bolinha)
+
+        //---Coeficiente de Assimetria
+        let AS = Number(casasDecimais(((3 * (ma - md)) / DP) * 1, 2))
+        if(AS < 0) {AS *= -1}
+        let ASText = ''
+
+        if(AS < 0.15) {
+            ASText = 'Assimetria Pequena'
+        } else if (AS > 1) {
+            ASText = 'Assimetria Elevada'
+        } else {
+            ASText = 'Assimetria Moderada'
+        }
+        
+        //---Coeficiente de curtose
+        const curtose = Number(casasDecimais((qt3 - qt1) / (2 * (p90 - p10)), 3))
+        let CText = ''
+
+        if(curtose === 0.263) {
+            CText = 'Mesocúrtica'
+        } else if(curtose < 0.263) {
+            CText = 'Leptocúrtica'
+        } else {
+            CText = 'Platicúrtica'
+        }
+
         //---Resultado
-        return showAll(somatorioFA, faa, fr, somatorioFR, fra, pm, PMxFA, somatorioPMxFA, ma, mo, md)
+        return showAll(somatorioFA, faa, fr, somatorioFR, fra, pm, PMxFA, somatorioPMxFA, ma, De, De2, D2xFA, somatorioD2xFA, mo, md, V, DP, TC, TcText, qt1, qt2, qt3, p10, p90, AS, curtose, ASText, CText)
 
     } else {
         alert('Hmmm, algo está errado preencha corretamente ou de um refresh!')
@@ -114,12 +189,16 @@ const calcular = () => {
     
 }
 
-const showAll = (somatorioFA, faa, fr, somatorioFR, fra, pm, PMxFA, somatorioPMxFA, ma, mo, md) => {
+const showAll = (somatorioFA, faa, fr, somatorioFR, fra, pm, PMxFA, somatorioPMxFA, ma, De, De2, D2xFA, somatorioD2xFA, mo, md, V, DP, TC, TcText, qt1, qt2, qt3, p10, p90, AS, curtose, ASText, CText) => {
     const selfaa = document.querySelector('#faa')
     const selfr = document.querySelector('#fr')
     const selfra = document.querySelector('#fra')
     const selpm = document.querySelector('#pm')
     const selpmxfa = document.querySelector('#pmxfa')
+    const selpm_ma = document.querySelector('#pm-ma')
+    const seld = document.querySelector('#d')
+    const seld2 = document.querySelector('#d2')
+    const seld2xfa = document.querySelector('#d2xfa')
 
     for(let i in fa) {
         //---FAA
@@ -142,6 +221,23 @@ const showAll = (somatorioFA, faa, fr, somatorioFR, fra, pm, PMxFA, somatorioPMx
         let opt5 = document.createElement('option')
         opt5.text = PMxFA[i]
         selpmxfa.appendChild(opt5)
+        //---PM-MA
+        let opt6 = document.createElement('option')
+        opt6.text = `${pm[i]} - ${ma}`
+        selpm_ma.appendChild(opt6)
+        //---D
+        let opt7 = document.createElement('option')
+        opt7.text = De[i]
+        seld.appendChild(opt7)
+        //---D²
+        let opt8 = document.createElement('option')
+        opt8.text = De2[i]
+        seld2.appendChild(opt8)
+        //---D²xFA
+        let opt9 = document.createElement('option')
+        opt9.text = D2xFA[i]
+        seld2xfa.appendChild(opt9)
+        
     }
     //Somatório FA
     const selectFA = document.querySelector('#fa')
@@ -156,13 +252,21 @@ const showAll = (somatorioFA, faa, fr, somatorioFR, fra, pm, PMxFA, somatorioPMx
     let opt5 = document.createElement('option')
     opt5.text = `Σ${somatorioPMxFA}`
     selpmxfa.appendChild(opt5)
+    //----somatório D2xFA
+    let opt9 = document.createElement('option')
+    opt9.text = `Σ${somatorioD2xFA}`
+    seld2xfa.appendChild(opt9)
     //---MA-MO-MD
     const result = document.querySelector('#showResult')
     result.style.padding = '30px'
-    result.style.width = '500px'
     result.style.marginTop = '20px'
     result.style.background = 'rgb(23, 23, 26)'
-    result.innerHTML += `<p>MA = ${ma} | MO = ${mo} | MD = ${md}</p>`
+    result.innerHTML += `<p>MA = ${ma} | MO = ${mo} | MD = ${md} | V = ${V} | DP = ${DP}</p>`
+    result.innerHTML += `<h2>TC = ${TC} ${TcText}</h2>`
+    result.innerHTML += `<h2>Quartiz Q1 = ${qt1} | Q2 = ${qt2} | Q3 = ${qt3}</h2>`
+    result.innerHTML += `<h2>Percentiz P10 = ${p10} | P90 = ${p90}</h2>`
+    result.innerHTML += `<h2>Coeficiente de Assimetria AS = ${AS} ${ASText}</h2>`
+    result.innerHTML += `<h2>Coeficiente de Curtose C = ${curtose} ${CText}</h2>`
 }
 
 
